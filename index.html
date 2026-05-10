@@ -446,7 +446,7 @@
         <div class="score-final" id="scoreFinal"></div>
         <div class="play-again-buttons" id="playAgainButtons">
             <button class="btn-finale btn-yes" id="btnPlayAgain">Yes, Play Again</button>
-            <button class="btn-finale btn-no" id="btnStay">No, Stay Here</button>
+            <button class="btn-finale btn-no" id="btnNewGame">No, New Game</button>
         </div>
     </div>
 
@@ -567,7 +567,7 @@
             scoreFinal: $('#scoreFinal'),
             playAgainButtons: $('#playAgainButtons'),
             btnPlayAgain: $('#btnPlayAgain'),
-            btnStay: $('#btnStay'),
+            btnNewGame: $('#btnNewGame'),
             setupModal: $('#setupModal'),
             team1Input: $('#team1Input'),
             team2Input: $('#team2Input'),
@@ -600,7 +600,7 @@
             catRotation: 0, modeRotation: 0,
             countdownInterval: null, timerSeconds: TURN_TIME,
             isSpinning: false, categoryTagInterval: null,
-            modeRevealTimeout: null,
+            modeRevealTimeout: null, isFirstGame: true,
         };
 
         function formatTime(sec) {
@@ -664,7 +664,6 @@
                 ctx.restore();
             }
 
-            // Draw center circle for visual appeal
             ctx.beginPath();
             ctx.arc(cx, cy, radius * 0.12, 0, Math.PI * 2);
             ctx.fillStyle = 'rgba(255,255,255,0.9)';
@@ -859,19 +858,29 @@
         }
 
         function playAgain() {
+            // YES - Restart game with same teams
             dom.finaleOverlay.classList.remove('active');
             clearTimeout(state.modeRevealTimeout);
             dom.modeAnnouncement.classList.remove('active');
-            state.scores = [0, 0]; state.turnCount = 0; state.currentTeam = 1;
-            state.activeMode = ''; state.currentCategory = ''; state.isSpinning = false;
-            catRotationRef.val = 0; modeRotationRef.val = 0;
+            state.scores = [0, 0]; 
+            state.turnCount = 0; 
+            state.currentTeam = 1;
+            state.activeMode = ''; 
+            state.currentCategory = ''; 
+            state.isSpinning = false;
+            catRotationRef.val = 0; 
+            modeRotationRef.val = 0;
             clearInterval(state.countdownInterval);
-            dom.score1.textContent = '0'; dom.score2.textContent = '0';
+            dom.score1.textContent = '0'; 
+            dom.score2.textContent = '0';
             dom.timer.textContent = formatTime(TURN_TIME);
-            dom.spinBtn.style.display = 'inline-block'; dom.spinBtn.disabled = false;
+            dom.spinBtn.style.display = 'inline-block'; 
+            dom.spinBtn.disabled = false;
             dom.stopBtn.style.display = 'none';
-            dom.modeDisplay.textContent = 'SPIN TO START'; dom.modeDisplay.style.color = 'var(--blue)';
-            dom.scoreCard1.classList.add('active'); dom.scoreCard2.classList.remove('active');
+            dom.modeDisplay.textContent = 'SPIN TO START'; 
+            dom.modeDisplay.style.color = 'var(--blue)';
+            dom.scoreCard1.classList.add('active'); 
+            dom.scoreCard2.classList.remove('active');
             dom.roundIndicator.textContent = `Round 1 of ${TOTAL_ROUNDS}`;
             dom.catCanvas.style.transform = 'rotate(0deg)';
             dom.modeCanvas.style.transform = 'rotate(0deg)';
@@ -879,7 +888,50 @@
             updateBanner();
         }
 
-        function stayOnFinale() {}
+        function newGame() {
+            // NO - Go back to team setup screen
+            dom.finaleOverlay.classList.remove('active');
+            clearTimeout(state.modeRevealTimeout);
+            dom.modeAnnouncement.classList.remove('active');
+            
+            // Reset state
+            state.team1Name = ''; 
+            state.team2Name = '';
+            state.scores = [0, 0]; 
+            state.turnCount = 0; 
+            state.currentTeam = 1;
+            state.activeMode = ''; 
+            state.currentCategory = ''; 
+            state.isSpinning = false;
+            state.isFirstGame = false;
+            catRotationRef.val = 0; 
+            modeRotationRef.val = 0;
+            clearInterval(state.countdownInterval);
+            
+            // Reset UI
+            dom.score1.textContent = '0'; 
+            dom.score2.textContent = '0';
+            dom.timer.textContent = formatTime(TURN_TIME);
+            dom.spinBtn.style.display = 'inline-block'; 
+            dom.spinBtn.disabled = false;
+            dom.stopBtn.style.display = 'none';
+            dom.modeDisplay.textContent = 'SPIN TO START'; 
+            dom.modeDisplay.style.color = 'var(--blue)';
+            dom.scoreCard1.classList.add('active'); 
+            dom.scoreCard2.classList.remove('active');
+            dom.roundIndicator.textContent = `Round 1 of ${TOTAL_ROUNDS}`;
+            dom.catCanvas.style.transform = 'rotate(0deg)';
+            dom.modeCanvas.style.transform = 'rotate(0deg)';
+            dom.name1.textContent = 'T1';
+            dom.name2.textContent = 'T2';
+            dom.gameContainer.classList.remove('active');
+            
+            // Clear inputs and show setup modal
+            dom.team1Input.value = '';
+            dom.team2Input.value = '';
+            showModal(dom.setupModal);
+            dom.team1Input.focus();
+        }
 
         function buildCongratsWord() {
             dom.congratsWord.innerHTML = '';
@@ -1014,7 +1066,7 @@
         });
 
         dom.btnPlayAgain.addEventListener('click', playAgain);
-        dom.btnStay.addEventListener('click', stayOnFinale);
+        dom.btnNewGame.addEventListener('click', newGame);
 
         buildIntro();
     })();
