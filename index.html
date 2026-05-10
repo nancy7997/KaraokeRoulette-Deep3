@@ -230,7 +230,6 @@
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
         }
 
-        /* Mode reveal announcement */
         .mode-announcement {
             position: fixed;
             inset: 0;
@@ -431,7 +430,6 @@
         <div class="intro-row" id="introRow2"></div>
     </div>
 
-    <!-- Mode Announcement Overlay -->
     <div class="mode-announcement" id="modeAnnouncement">
         <div class="mode-label">Mode Selected</div>
         <div class="mode-name" id="modeAnnounceName"></div>
@@ -532,7 +530,6 @@
         const SLICE_COLORS = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4'];
         const CONGRATS_COLORS = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#1DB954', '#FF6B6B', '#FFD93D'];
         
-        // 6 alternating slices: KARAOKE, NAME THAT SONG, KARAOKE, NAME THAT SONG, KARAOKE, NAME THAT SONG
         const MODES = ["KARAOKE", "NAME THAT SONG", "KARAOKE", "NAME THAT SONG", "KARAOKE", "NAME THAT SONG"];
         const MODE_COLORS = ["#1DB954", "#3498db", "#1DB954", "#3498db", "#1DB954", "#3498db"];
         
@@ -624,11 +621,11 @@
             const angle = (Math.PI * 2) / numSlices;
             const fontSize = opts.fontSize || 45;
             const textColor = opts.textColor || 'black';
+            const lineHeight = fontSize * 1.25;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             for (let i = 0; i < numSlices; i++) {
-                // Start from top (-PI/2) so first slice begins at 12 o'clock
                 const startAngle = i * angle - Math.PI / 2;
                 const endAngle = (i + 1) * angle - Math.PI / 2;
                 
@@ -643,21 +640,19 @@
 
                 ctx.save();
                 ctx.translate(cx, cy);
-                // Mid angle of this slice
                 const midAngle = startAngle + angle / 2;
                 ctx.rotate(midAngle);
                 
-                ctx.textAlign = 'right';
-                ctx.textBaseline = 'middle';
                 ctx.fillStyle = textColor;
                 ctx.font = `bold ${fontSize}px sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
 
                 const text = slices[i];
-                const textRadius = radius * 0.68;
+                const textRadius = radius * 0.65;
                 
                 if (opts.multilineSplit && text.includes(' ')) {
                     const words = text.split(' ');
-                    const lineHeight = fontSize * 1.2;
                     const mid = Math.ceil(words.length / 2);
                     const line1 = words.slice(0, mid).join(' ');
                     const line2 = words.slice(mid).join(' ');
@@ -668,36 +663,33 @@
                 }
                 ctx.restore();
             }
+
+            // Draw center circle for visual appeal
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 0.12, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
         }
 
         function drawCategoryWheel() {
-            drawWheel(dom.catCanvas, CATEGORIES, SLICE_COLORS, { fontSize: 38, textColor: 'black', multilineSplit: false });
+            drawWheel(dom.catCanvas, CATEGORIES, SLICE_COLORS, { fontSize: 36, textColor: 'black', multilineSplit: false });
         }
 
         function drawModeWheel() {
-            // 6 slices with alternating text
-            drawWheel(dom.modeCanvas, MODES, MODE_COLORS, { fontSize: 32, textColor: 'white', multilineSplit: true });
+            drawWheel(dom.modeCanvas, MODES, MODE_COLORS, { fontSize: 29, textColor: 'white', multilineSplit: true });
         }
 
         function spinWheel(canvas, slices, rotationRef) {
-            // Random prize index
             const prize = Math.floor(Math.random() * slices.length);
             const sliceDeg = 360 / slices.length;
-            
-            // Pointer is at 12 o'clock.
-            // The first slice (index 0) starts at 12 o'clock and goes clockwise.
-            // Its center is at sliceDeg/2 degrees clockwise from 12 o'clock.
-            // So for prize index P, the center of that slice is at P*sliceDeg + sliceDeg/2.
-            // To land the pointer on the center of slice P, we need to rotate the wheel
-            // so that (P*sliceDeg + sliceDeg/2) aligns with the pointer (at top/0 degrees).
-            // stopAngle = 360 - (P*sliceDeg + sliceDeg/2)
             const stopAngle = 360 - (prize * sliceDeg + sliceDeg / 2);
-            
             const fullSpins = 360 * (5 + Math.floor(Math.random() * 4));
             const newRotation = rotationRef.val + fullSpins + (stopAngle - (rotationRef.val % 360));
             rotationRef.val = newRotation;
             canvas.style.transform = `rotate(${newRotation}deg)`;
-            
             return { prize, duration: 4000 };
         }
 
