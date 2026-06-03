@@ -503,21 +503,23 @@
         </div>
     </div>
 
+    <!-- KARAOKE SCORE MODAL - Updated points -->
     <div class="modal" id="karaokeScoreModal">
         <div class="modal-card">
             <h2>Did they sing?</h2>
-            <button class="modal-btn" style="background:var(--green); color:#fff;" data-points="100">YES (100 pts)</button>
+            <button class="modal-btn" style="background:var(--green); color:#fff;" data-points="50">YES (50 pts)</button>
             <button class="modal-btn" style="background:var(--yellow); color:#000;" data-points="25">OTHER (25 pts)</button>
             <button class="modal-btn" style="background:var(--red); color:#fff;" data-points="0">NO (0 pts)</button>
         </div>
     </div>
 
+    <!-- NAME THAT SONG SCORE MODAL - Updated points -->
     <div class="modal" id="guessScoreModal">
         <div class="modal-card">
             <h2>Result?</h2>
-            <button class="modal-btn" style="background:var(--green); color:#fff;" data-points="50">BOTH (50 pts)</button>
-            <button class="modal-btn" style="background:var(--blue); color:#fff;" data-points="15">ARTIST ONLY (15 pts)</button>
-            <button class="modal-btn" style="background:var(--purple); color:#fff;" data-points="10">SONG ONLY (10 pts)</button>
+            <button class="modal-btn" style="background:var(--green); color:#fff;" data-points="100">BOTH - Artist & Song (100 pts)</button>
+            <button class="modal-btn" style="background:var(--blue); color:#fff;" data-points="50">SONG ONLY (50 pts)</button>
+            <button class="modal-btn" style="background:var(--purple); color:#fff;" data-points="25">ARTIST ONLY (25 pts)</button>
             <button class="modal-btn" style="background:var(--red); color:#fff;" data-points="0">NONE (0 pts)</button>
         </div>
     </div>
@@ -858,7 +860,6 @@
         }
 
         function playAgain() {
-            // YES - Restart game with same teams
             dom.finaleOverlay.classList.remove('active');
             clearTimeout(state.modeRevealTimeout);
             dom.modeAnnouncement.classList.remove('active');
@@ -889,12 +890,10 @@
         }
 
         function newGame() {
-            // NO - Go back to team setup screen
             dom.finaleOverlay.classList.remove('active');
             clearTimeout(state.modeRevealTimeout);
             dom.modeAnnouncement.classList.remove('active');
             
-            // Reset state
             state.team1Name = ''; 
             state.team2Name = '';
             state.scores = [0, 0]; 
@@ -908,7 +907,6 @@
             modeRotationRef.val = 0;
             clearInterval(state.countdownInterval);
             
-            // Reset UI
             dom.score1.textContent = '0'; 
             dom.score2.textContent = '0';
             dom.timer.textContent = formatTime(TURN_TIME);
@@ -926,7 +924,6 @@
             dom.name2.textContent = 'T2';
             dom.gameContainer.classList.remove('active');
             
-            // Clear inputs and show setup modal
             dom.team1Input.value = '';
             dom.team2Input.value = '';
             showModal(dom.setupModal);
